@@ -1,0 +1,14 @@
+{"timestamp": "2026-05-22T15:57:38.062424Z", "level": "INFO", "logger": "scraper", "message": "Checking robots.txt for https://www.goodreads.com..."}
+{"timestamp": "2026-05-22T15:57:38.389904Z", "level": "INFO", "logger": "scraper", "message": "Rate limiting: waiting 2s..."}
+{"timestamp": "2026-05-22T15:57:40.390733Z", "level": "INFO", "logger": "scraper", "message": "Fetching https://www.goodreads.com..."}
+{"timestamp": "2026-05-22T15:57:40.877635Z", "level": "INFO", "logger": "scraper", "message": "Fetched https://www.goodreads.com → 200 (480ms) [attempt 1]", "url": "https://www.goodreads.com", "status_code": 200, "response_time_ms": 480, "event": "fetch_success"}
+{"timestamp": "2026-05-22T15:57:40.887403Z", "level": "INFO", "logger": "scraper", "message": "Extracting fields: ['title', 'headings', 'links']"}
+{"timestamp": "2026-05-22T15:57:40.949979Z", "level": "WARNING", "logger": "scraper", "message": "PII detected and masked in output. Types found: ['phone']", "event": "pii_detected"}
+{"timestamp": "2026-05-22T15:57:40.956139Z", "level": "INFO", "logger": "scraper", "message": "Saved 150 records to C:\\Users\\farah\\Documents\\tbs\\junior\\securitty\\project\\webscraper\\output\\scraped_20260522_165740.csv", "event": "output_saved"}
+{"timestamp": "2026-05-22T15:59:30.659615Z", "level": "INFO", "logger": "scraper", "message": "Checking robots.txt for https://www.goodreads.com..."}
+{"timestamp": "2026-05-22T15:59:31.112507Z", "level": "INFO", "logger": "scraper", "message": "Rate limiting: waiting 2s..."}
+{"timestamp": "2026-05-22T15:59:33.113680Z", "level": "INFO", "logger": "scraper", "message": "Fetching https://www.goodreads.com..."}
+{"timestamp": "2026-05-22T15:59:33.722269Z", "level": "INFO", "logger": "scraper", "message": "Fetched https://www.goodreads.com → 200 (605ms) [attempt 1]", "url": "https://www.goodreads.com", "status_code": 200, "response_time_ms": 605, "event": "fetch_success"}
+{"timestamp": "2026-05-22T15:59:33.723260Z", "level": "INFO", "logger": "scraper", "message": "Extracting fields: ['title', 'headings', 'links']"}
+{"timestamp": "2026-05-22T15:59:33.797675Z", "level": "WARNING", "logger": "scraper", "message": "PII detected and masked in output. Types found: ['phone']", "event": "pii_detected"}
+{"timestamp": "2026-05-22T15:59:33.803652Z", "level": "INFO", "logger": "scraper", "message": "Saved 150 records to C:\\Users\\farah\\Documents\\tbs\\junior\\securitty\\project\\webscraper\\output\\scraped_20260522_165933.csv", "event": "output_saved"}

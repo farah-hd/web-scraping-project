@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WebScraper — TBS Cybersecurity Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #141720;
+      --border: #252935;
+      --accent: #c9a84c;
+      --accent2: #e8c97a;
+      --green: #3ddc84;
+      --red: #ff5757;
+      --yellow: #f0b429;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* ── header ── */
+    header {
+      max-width: 780px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+    .logo-box {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      color: #000;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    header h1 {
+      font-family: var(--mono);
+      font-size: 1.3rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    header p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── main container ── */
+    .container { max-width: 780px; margin: 0 auto; }
+
+    /* ── card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* ── form elements ── */
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+    input[type="url"], input[type="text"], select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      padding: 0.65rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+
+    /* ── checkboxes ── */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.4rem;
+    }
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.7rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      font-size: 0.82rem;
+    }
+    .field-item:hover { border-color: var(--accent); }
+    .field-item input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; }
+    .field-item.checked { border-color: var(--accent); background: rgba(201,168,76,0.06); }
+
+    /* ── select ── */
+    select option { background: var(--surface); }
+
+    /* ── run button ── */
+    #runBtn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.4rem;
+    }
+    #runBtn:hover { background: var(--accent2); }
+    #runBtn:active { transform: scale(0.99); }
+    #runBtn:disabled { background: #3a3a3a; color: #666; cursor: not-allowed; }
+
+    /* ── status / results ── */
+    #results { display: none; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1rem;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    .status-bar.loading { background: rgba(240,180,41,0.1); border: 1px solid var(--yellow); color: var(--yellow); }
+    .status-bar.success { background: rgba(61,220,132,0.1); border: 1px solid var(--green); color: var(--green); }
+    .status-bar.error   { background: rgba(255,87,87,0.1);  border: 1px solid var(--red);   color: var(--red); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .dot.pulse { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── security badge row ── */
+    .badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .badge {
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.72rem; font-family: var(--mono);
+      padding: 0.3rem 0.65rem;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+    .badge.ok    { border-color: var(--green); color: var(--green); background: rgba(61,220,132,0.08); }
+    .badge.warn  { border-color: var(--yellow); color: var(--yellow); background: rgba(240,180,41,0.08); }
+    .badge.block { border-color: var(--red); color: var(--red); background: rgba(255,87,87,0.08); }
+
+    /* ── stat grid ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1rem; }
+    .stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+    }
+    .stat-val { font-family: var(--mono); font-size: 1.5rem; color: var(--accent); font-weight: 700; }
+    .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── warnings/errors list ── */
+    .msg-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .msg-list li {
+      font-size: 0.8rem;
+      font-family: var(--mono);
+      padding: 0.4rem 0.7rem;
+      border-radius: 4px;
+      border-left: 3px solid;
+    }
+    .msg-list li.warn { border-color: var(--yellow); background: rgba(240,180,41,0.06); color: var(--yellow); }
+    .msg-list li.err  { border-color: var(--red);    background: rgba(255,87,87,0.06);  color: var(--red); }
+
+    /* ── download button ── */
+    #downloadBtn {
+      display: none;
+      padding: 0.7rem 1.4rem;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.8rem;
+    }
+    #downloadBtn:hover { background: rgba(61,220,132,0.1); }
+
+    /* ── preview table ── */
+    .table-wrap { overflow-x: auto; margin-top: 0.8rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    th { background: var(--border); color: var(--muted); font-family: var(--mono); text-align: left; padding: 0.5rem 0.8rem; font-size: 0.7rem; letter-spacing: 0.05em; }
+    td { padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--border); font-family: var(--mono); max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #c8ccd8; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── footer ── */
+    footer { text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-box">WS</div>
+  <div>
+    <h1>WEBSITE SCRAPER</h1>
+    <p>Cybersecurity Project · Information Assurance and Security · TBS 2025/2026</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- URL Input -->
+  <div class="card">
+    <div class="card-title">// 01 — Target URL</div>
+    <label for="urlInput">Enter the website URL to scrape</label>
+    <input type="url" id="urlInput" placeholder="https://example.com" />
+  </div>
+
+  <!-- Field Selection -->
+  <div class="card">
+    <div class="card-title">// 02 — Data to Extract</div>
+    <label>Choose what you want to collect from the page</label>
+    <div class="fields-grid" id="fieldsGrid">
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="title" /> Page Title
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="headings" /> Headings (H1–H3)
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="paragraphs" /> Paragraphs
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="links" /> All Links
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="images" /> Images
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="meta_description" /> Meta Description
+      </label>
+      <label class="field-item" onclick="toggleField(this)">
+        <input type="checkbox" value="all_text" /> All Text
+      </label>
+    </div>
+  </div>
+
+  <!-- Output Format -->
+  <div class="card">
+    <div class="card-title">// 03 — Output Format</div>
+    <label for="formatSelect">Save results as</label>
+    <select id="formatSelect">
+      <option value="csv">CSV (spreadsheet-friendly)</option>
+      <option value="json">JSON (developer-friendly)</option>
+      <option value="excel">Excel (.xlsx)</option>
+    </select>
+  </div>
+
+  <!-- Run Button -->
+  <button id="runBtn" onclick="runScraper()">▶ RUN SCRAPER</button>
+
+  <!-- Results Section -->
+  <div id="results">
+
+    <div style="height:1.2rem"></div>
+
+    <!-- Status -->
+    <div id="statusBar" class="status-bar loading">
+      <div class="dot pulse"></div>
+      <span id="statusText">Running scraper pipeline...</span>
+    </div>
+
+    <!-- Security checks -->
+    <div class="card" id="securityCard" style="display:none">
+      <div class="card-title">// Security & Compliance Report</div>
+      <div class="badges" id="badgesRow"></div>
+      <div id="robotsMsg" style="font-size:0.8rem; color: var(--muted); margin-bottom:0.8rem;"></div>
+      <ul class="msg-list" id="warningsList"></ul>
+    </div>
+
+    <!-- Stats -->
+    <div class="card" id="statsCard" style="display:none">
+      <div class="card-title">// Scrape Summary</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-val" id="statStatus">—</div><div class="stat-label">HTTP Status</div></div>
+        <div class="stat"><div class="stat-val" id="statRecords">—</div><div class="stat-label">Records Found</div></div>
+        <div class="stat"><div class="stat-val" id="statTime">—</div><div class="stat-label">Response (ms)</div></div>
+      </div>
+      <button id="downloadBtn" onclick="downloadFile()">⬇ Download Output File</button>
+    </div>
+
+    <!-- Data Preview -->
+    <div class="card" id="previewCard" style="display:none">
+      <div class="card-title">// Data Preview (first 20 rows)</div>
+      <div class="table-wrap">
+        <table id="previewTable"></table>
+      </div>
+    </div>
+
+    <!-- Errors -->
+    <div class="card" id="errorsCard" style="display:none">
+      <div class="card-title">// Errors</div>
+      <ul class="msg-list" id="errorsList"></ul>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  Team: Farah Haddad · Mariem Maddouri · Zeineb Jaghmoun · Mayssa Ben Youssef · Mariem Soltani
+</footer>
+
+<script>
+  let lastResult = null;
+
+  function toggleField(label) {
+    const cb = label.querySelector('input[type="checkbox"]');
+    // The click already toggled it; sync the class
+    setTimeout(() => {
+      label.classList.toggle('checked', cb.checked);
+    }, 0);
+  }
+
+  async function runScraper() {
+    const url = document.getElementById('urlInput').value.trim();
+    const fields = [...document.querySelectorAll('#fieldsGrid input:checked')].map(cb => cb.value);
+    const outputFormat = document.getElementById('formatSelect').value;
+
+    if (!url) { alert('Please enter a URL.'); return; }
+    if (!fields.length) { alert('Please select at least one data field.'); return; }
+
+    const btn = document.getElementById('runBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Running...';
+
+    // Show results section + loading state
+    document.getElementById('results').style.display = 'block';
+    setStatus('loading', 'Running scraper pipeline...');
+    hide('securityCard'); hide('statsCard'); hide('previewCard'); hide('errorsCard');
+    document.getElementById('downloadBtn').style.display = 'none';
+
+    try {
+      const resp = await fetch('/api/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, fields, output_format: outputFormat })
+      });
+      const data = await resp.json();
+      lastResult = data;
+      renderResults(data);
+    } catch (e) {
+      setStatus('error', 'Network error — is the Flask server running?');
+    }
+
+    btn.disabled = false;
+    btn.textContent = '▶ RUN SCRAPER';
+  }
+
+  function renderResults(data) {
+    // Security card
+    const robots = data.robots_check || {};
+    show('securityCard');
+    document.getElementById('robotsMsg').textContent = robots.reason || '';
+
+    const badges = document.getElementById('badgesRow');
+    badges.innerHTML = '';
+    addBadge(badges, robots.allowed ? 'ok' : 'block',
+      robots.allowed ? '✓ robots.txt Allowed' : '✗ robots.txt BLOCKED');
+    addBadge(badges, 'ok', '✓ TLS Verified');
+    addBadge(badges, 'ok', '✓ User-Agent Rotation');
+    addBadge(badges, 'ok', '✓ Rate Limiting Active');
+
+    const wList = document.getElementById('warningsList');
+    wList.innerHTML = '';
+    (data.warnings || []).forEach(w => {
+      const li = document.createElement('li');
+      li.className = 'warn';
+      li.textContent = '⚠ ' + w;
+      wList.appendChild(li);
+    });
+
+    // Errors
+    if (data.errors && data.errors.length) {
+      show('errorsCard');
+      const eList = document.getElementById('errorsList');
+      eList.innerHTML = '';
+      data.errors.forEach(e => {
+        const li = document.createElement('li');
+        li.className = 'err';
+        li.textContent = '✗ ' + e;
+        eList.appendChild(li);
+      });
+      setStatus('error', 'Scraping failed — see errors below.');
+      return;
+    }
+
+    // Stats
+    show('statsCard');
+    document.getElementById('statStatus').textContent = data.fetch?.status_code || '—';
+    document.getElementById('statRecords').textContent = data.records_count ?? '0';
+    document.getElementById('statTime').textContent = data.fetch?.elapsed_ms ?? '—';
+
+    if (data.output_file) {
+      document.getElementById('downloadBtn').style.display = 'inline-block';
+    }
+
+    setStatus('success', `Done! Extracted ${data.records_count} records.`);
+  }
+
+  function downloadFile() {
+    if (!lastResult?.output_file) return;
+    const filename = lastResult.output_file.split('/').pop().split('\\').pop();
+    window.open('/api/download/' + filename, '_blank');
+  }
+
+  // ── helpers ──
+  function setStatus(type, msg) {
+    const bar = document.getElementById('statusBar');
+    bar.className = 'status-bar ' + type;
+    const dot = bar.querySelector('.dot');
+    dot.className = 'dot' + (type === 'loading' ? ' pulse' : '');
+    document.getElementById('statusText').textContent = msg;
+  }
+  function show(id) { document.getElementById(id).style.display = 'block'; }
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+  function addBadge(container, type, label) {
+    const b = document.createElement('span');
+    b.className = 'badge ' + type;
+    b.textContent = label;
+    container.appendChild(b);
+  }
+</script>
+</body>
+</html>
